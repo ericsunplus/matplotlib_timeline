@@ -13,22 +13,22 @@ from matplotlib import dates
 ####################################################
 dataset = {
         'Department A' : [
-            ['Plan Delivery', '2021-9-26'],
-            ['Communication 1', '2021-10-29'],
-            ['Resource Prepare', '2021-7-26'],
-            ['Deliver 1', '2021-10-20'],
-            ['Deliver 2', '2021-12-14'],
-            ['Final Delivery', '2022-4-20'],
+            [['Plan Delivery', '2021-9-26'], 'r'],
+            [['Communication 1', '2021-10-29'], 'g'],
+            [['Resource Prepare', '2021-7-26'], 'y'],
+            [['Deliver 1', '2021-10-20']],
+            [['Deliver 2', '2021-12-14']],
+            [['Final Delivery', '2022-4-20']],
         ],
         'Department B' : [
-            ['Experiment', '2021-4-1', '2021-8-2'],
-            ['Result 1', '2021-6-15'],
-            ['Result 2', '2021-7-28']
+            [['Experiment', '2021-4-1', '2021-8-2'], 'p'],
+            [['Result 1', '2021-6-15']],
+            [['Result 2', '2021-7-28']]
         ],
         'Department C' : [
-            ['Product Launch Process', '2022-2-10', '2022-6-11'],
-            ['RC1', '2022-2-10'],
-            ['RC2', '2022-5-28']
+            [['Product Launch Process', '2022-2-10', '2022-6-11']],
+            [['RC1', '2022-2-10']],
+            [['RC2', '2022-5-28']]
         ]
 }
 
@@ -40,6 +40,8 @@ categoryHeight = 20
 ProperDateInterval = 45
 
 refDate = "2021-1-1"
+
+defaultColor = 'cornflowerblue'
 
 def pairwise(iterable):
     """
@@ -139,13 +141,18 @@ def add_mileStone(plt, milestone, yPos, color):
 def findStartEnd(dataset):
     """
     """
-    key = list(dataset.keys())[0]
-    projStart = datetime.strptime(dataset[key][0][1], "%Y-%m-%d")
-    projEnd = datetime.strptime(dataset[key][0][len(dataset[key][0])-1], "%Y-%m-%d")
+    keylist = list(dataset.keys())  # categories
+    key = keylist[0]
+    ele = dataset[key][0][0]
+    eleLen = len(ele)
+    projStart = datetime.strptime(ele[1], "%Y-%m-%d")
+    projEnd = datetime.strptime(ele[eleLen-1], "%Y-%m-%d")
     for key in dataset.keys():
         for item in dataset[key]:
-            curStart = datetime.strptime(item[1], "%Y-%m-%d")
-            curEnd = datetime.strptime(item[len(item)-1], "%Y-%m-%d")
+            ele = item[0]
+            eleLen = len(ele)
+            curStart = datetime.strptime(ele[1], "%Y-%m-%d")
+            curEnd = datetime.strptime(ele[eleLen-1], "%Y-%m-%d")
             if curStart < projStart:
                 projStart = curStart
             if curEnd > projEnd:
@@ -160,15 +167,26 @@ def findStartEnd(dataset):
 ########
 # add item, either milestone or task
 ########
+def color_translation(x):
+    return {
+        'r' : 'tab:red',
+        'g' : 'tab:green',
+        'b' : 'tab:blue',
+        'y' : 'tab:olive',
+        'p' : 'tab:pink'
+    }.get(x, 'tab:blue')
+
 def add_item(plt, ax, item, yPos):
     """
     """
-    if (len(item) == 2):
+    if (len(item[0]) == 2):
         # milestone
-        add_mileStone(plt, item, yPos, "cornflowerblue")
-    elif (len(item) == 3):
+        color = defaultColor if len(item) == 1 else color_translation(item[1])
+        add_mileStone(plt, item[0], yPos, color)
+    elif (len(item[0]) == 3):
+        color = defaultColor if len(item) == 1 else color_translation(item[1])
         # task
-        add_task(ax, item, yPos, 2, "cornflowerblue")
+        add_task(ax, item[0], yPos, 2, color)
 #######
 # drawList
 #######
@@ -180,7 +198,7 @@ def drawList(plt, ax, itemList, baseline, height):
     prevAlt2 = datetime.strptime(refDate, "%Y-%m-%d")
     alt2Y = baseline + height * 3 / 4
     for item in itemList:
-        currentDate = datetime.strptime(item[1], "%Y-%m-%d")
+        currentDate = datetime.strptime(item[0][1], "%Y-%m-%d")
         if (currentDate - prevBase).days > ProperDateInterval:
             # Base
             add_item(plt, ax, item, baseY)
@@ -204,18 +222,18 @@ def drawDatalist(plt, ax, datalist, baseline, height):
     """
     tempDict = {}
     for item in datalist:
-        tempDict.setdefault(len(item), []).append(item)
+        tempDict.setdefault(len(item[0]), []).append(item)
     keys = tempDict.keys()
     if (len(keys) == 1):
         # only one group
         key = list(keys)[0]
-        itemList = sorted(tempDict[key], key=lambda x:datetime.strptime(x[1], "%Y-%m-%d"))
+        itemList = sorted(tempDict[key], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
         drawList(plt, ax, itemList, baseline, height)
     else:
         # both interval and milestone
-        tasklist = sorted(tempDict[3], key=lambda x:datetime.strptime(x[1], "%Y-%m-%d"))
+        tasklist = sorted(tempDict[3], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
         drawList(plt, ax, tasklist, baseline, height/2)
-        milestoneList = sorted(tempDict[2], key=lambda x:datetime.strptime(x[1], "%Y-%m-%d"))
+        milestoneList = sorted(tempDict[2], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
         drawList(plt, ax, milestoneList, baseline + height/2, height/2)
     return
 

@@ -276,5 +276,7 @@ for key in dataset.keys():
     baseline -= categoryHeight
     drawDatalist(plt, ax, datalist, baseline, categoryHeight)
 
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
 
 plt.show()

@@ -32,12 +32,15 @@ dataset = {
         ]
 }
 
+
+NumberOfAltPlace = 3
+ProperDateInterval = 30 
+
 color_bg = 'grey'
 markSize = 8
 
 categoryHeight = 20
 
-ProperDateInterval = 45
 
 refDate = "2021-1-1"
 
@@ -172,8 +175,12 @@ def color_translation(x):
         'r' : 'tab:red',
         'g' : 'tab:green',
         'b' : 'tab:blue',
+        'c' : 'tab:cyan',
+        'p' : 'tab:pink',
         'y' : 'tab:olive',
-        'p' : 'tab:pink'
+        'br' : 'tab:brown',
+        'pu' : 'tab:purple',
+        'ol' : 'tab:olive',
     }.get(x, 'tab:blue')
 
 def add_item(plt, ax, item, yPos):
@@ -191,28 +198,35 @@ def add_item(plt, ax, item, yPos):
 # drawList
 #######
 def drawList(plt, ax, itemList, baseline, height):
-    prevBase = datetime.strptime(refDate, "%Y-%m-%d")
-    baseY = baseline + height / 2
-    prevAlt1 = datetime.strptime(refDate, "%Y-%m-%d")
-    alt1Y = baseline + height / 4
-    prevAlt2 = datetime.strptime(refDate, "%Y-%m-%d")
-    alt2Y = baseline + height * 3 / 4
+    # prevBase = [datetime.strptime(refDate, "%Y-%m-%d"), datetime.strptime(refDate, "%Y-%m-%d"), datetime.strptime(refDate, "%Y-%m-%d")]
+    # if NumberOfAltPlace % 2 == 0:
+    #     NumberOfAltPlace += 1
+    global NumberOfAltPlace
+    if (NumberOfAltPlace % 2) == 0:
+        NumberOfAltPlace += 1
+    prevBase = [datetime.strptime(refDate, "%Y-%m-%d")] * NumberOfAltPlace
+    baseY = [baseline + height / 2] * NumberOfAltPlace
+    yInterval = height / (NumberOfAltPlace + 1)
+    initialOffset = (NumberOfAltPlace - 1) / 2
+    for i in range(NumberOfAltPlace):
+        offset = i - initialOffset
+        baseY[i] += offset * yInterval
+    # prevAlt1 = 
+    # alt1Y = baseline + height / 4
+    # prevAlt2 = datetime.strptime(refDate, "%Y-%m-%d")
+    # alt2Y = baseline + height * 3 / 4
     for item in itemList:
+        hit = False
         currentDate = datetime.strptime(item[0][1], "%Y-%m-%d")
-        if (currentDate - prevBase).days > ProperDateInterval:
-            # Base
-            add_item(plt, ax, item, baseY)
-            prevBase = currentDate
-        elif (currentDate - prevAlt1).days > ProperDateInterval:
-            # Alt1
-            add_item(plt, ax, item, alt1Y)
-            prevAlt1 = currentDate
-        elif (currentDate - prevAlt2).days > ProperDateInterval:
-            # Alt2
-            add_item(plt, ax, item, alt2Y)
-            prevAlt2 = currentDate
-        else:
-            print("No place to put the new stuff")
+        for i in range(NumberOfAltPlace):
+            if (currentDate - prevBase[i]).days > ProperDateInterval:
+                # Base
+                add_item(plt, ax, item, baseY[i])
+                prevBase[i] = currentDate
+                hit = True
+                break
+        if not hit:
+            print("No place to put the new stuff " + item[0][0] + " on " + item[0][1])
 
 ########
 # drawDatalist
@@ -264,4 +278,3 @@ for key in dataset.keys():
 
 
 plt.show()
-

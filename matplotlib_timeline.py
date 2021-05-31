@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import itertools
 from matplotlib import dates
+import matplotlib.patches as mpatches
 
 ####################################################
 # User should provide a dataset dictionary
@@ -11,11 +12,18 @@ from matplotlib import dates
 #         - milestone, ['Event Name', 'Date']
 #         - tasks, ['Task Name', 'Start Date', 'End Date']
 ####################################################
+myLegend = [
+        ['Group 1', 'r'],
+        ['Group 2', 'g'],
+        ['Group 3', 'p'],
+        ['Group 4', 'cornflowerblue'],
+]
+
 dataset = {
         'Department A' : [
             [['Plan Delivery', '2021-9-26'], 'r'],
             [['Communication 1', '2021-10-29'], 'g'],
-            [['Resource Prepare', '2021-7-26'], 'y'],
+            [['Resource Prepare', '2021-7-26'], 'p'],
             [['Deliver 1', '2021-10-20']],
             [['Deliver 2', '2021-12-14']],
             [['Final Delivery', '2022-4-20']],
@@ -251,6 +259,12 @@ def drawDatalist(plt, ax, datalist, baseline, height):
         drawList(plt, ax, milestoneList, baseline + height/2, height/2)
     return
 
+def drawLegend(plt, myLegend):
+    handles = []
+    for ele in myLegend:
+        patch = mpatches.Patch(color=color_translation(ele[1]), label=ele[0])
+        handles.append(patch)
+    plt.legend(handles=handles)
 ##########################################################################################################################################################
 #
 # Main
@@ -276,7 +290,10 @@ for key in dataset.keys():
     baseline -= categoryHeight
     drawDatalist(plt, ax, datalist, baseline, categoryHeight)
 
+drawLegend(plt, myLegend)
+
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()
+
 
 plt.show()

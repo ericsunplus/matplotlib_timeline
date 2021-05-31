@@ -28,6 +28,9 @@ Using the dataset as the example below:
             ]
     }
 
+Various data groups will be provided, each containing milestones and tasks. Each group will be depicted in non overlapping
+y spans.
+
 ## About the colors
 The default item color is set by `defaultColor`. For each milestone or task, you can specify its color separately
 | color specifier | Actual Color  |
@@ -38,5 +41,18 @@ The default item color is set by `defaultColor`. For each milestone or task, you
 |       'y'       | 'tab:olive'   |
 |       'p'       | 'tab:pink'    |
 
+## Adding Legend
+When multi colors are used, it is useful to create a legend for different color
+
+    myLegend = [
+            ['Group 1', 'r'],
+            ['Group 2', 'g'],
+            ['Group 3', 'p'],
+            ['Group 4', 'cornflowerblue'],
+    ]
+
+Color legend will gives an extra dimension other than the y span group.
+
+## Screenshot
 The generated timeline will be dipicted as below:
 ![Example Timeline](doc/Sample.png)

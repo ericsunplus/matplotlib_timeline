@@ -129,10 +129,10 @@ def add_task(ax, task, yPos, width, color):
     endTime = datetime.strptime(task[2], "%Y-%m-%d")
     name = task[0]
     ax.broken_barh([(startTime, endTime - startTime)], (yPos-width/2, width), facecolors=(color))
-    ax.text(endTime, yPos + 1, name, size = markSize, ha="left", va="center", weight = "bold")
+    ax.text(startTime, yPos + 1, name, size = markSize, ha="right", va="center", weight = "bold")
     startAbbr = startTime.strftime("%b %d")
     endAbbr = endTime.strftime("%b %d")
-    ax.text(endTime, yPos - 1, startAbbr + ' ~ ' + endAbbr, ha="left", va="center", size = markSize)
+    ax.text(startTime, yPos - 1, startAbbr + ' ~ ' + endAbbr, ha="right", va="center", size = markSize)
 
 def add_mileStone(plt, milestone, yPos, color):
     """
@@ -226,11 +226,12 @@ def drawList(plt, ax, itemList, baseline, height):
     for item in itemList:
         hit = False
         currentDate = datetime.strptime(item[0][1], "%Y-%m-%d")
+        currentEnd = datetime.strptime(item[0][-1], "%Y-%m-%d")
         for i in range(NumberOfAltPlace):
             if (currentDate - prevBase[i]).days > ProperDateInterval:
                 # Base
                 add_item(plt, ax, item, baseY[i])
-                prevBase[i] = currentDate
+                prevBase[i] = currentEnd
                 hit = True
                 break
         if not hit:
@@ -242,21 +243,23 @@ def drawList(plt, ax, itemList, baseline, height):
 def drawDatalist(plt, ax, datalist, baseline, height):
     """
     """
-    tempDict = {}
-    for item in datalist:
-        tempDict.setdefault(len(item[0]), []).append(item)
-    keys = tempDict.keys()
-    if (len(keys) == 1):
-        # only one group
-        key = list(keys)[0]
-        itemList = sorted(tempDict[key], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
-        drawList(plt, ax, itemList, baseline, height)
-    else:
-        # both interval and milestone
-        tasklist = sorted(tempDict[3], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
-        drawList(plt, ax, tasklist, baseline, height/2)
-        milestoneList = sorted(tempDict[2], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
-        drawList(plt, ax, milestoneList, baseline + height/2, height/2)
+    ### tempDict = {}
+    ### for item in datalist:
+    ###     tempDict.setdefault(len(item[0]), []).append(item)
+    ### keys = tempDict.keys()
+    ### if (len(keys) == 1):
+    ###     # only one group
+    ###     key = list(keys)[0]
+    ###     itemList = sorted(tempDict[key], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
+    ###     drawList(plt, ax, itemList, baseline, height)
+    ### else:
+    ###     # both interval and milestone
+    ###     tasklist = sorted(tempDict[3], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
+    ###     drawList(plt, ax, tasklist, baseline, height/2)
+    ###     milestoneList = sorted(tempDict[2], key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
+    ###     drawList(plt, ax, milestoneList, baseline + height/2, height/2)
+    itemList = sorted(datalist, key=lambda x:datetime.strptime(x[0][1], "%Y-%m-%d"))
+    drawList(plt, ax, itemList, baseline, height)
     return
 
 def drawLegend(plt, myLegend):
@@ -294,6 +297,5 @@ drawLegend(plt, myLegend)
 
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()
-
 
 plt.show()

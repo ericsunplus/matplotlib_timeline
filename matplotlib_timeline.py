@@ -7,11 +7,28 @@ import matplotlib.patches as mpatches
 
 ####################################################
 # User should provide a dataset dictionary
-#     key : Item Group Names, will show on y-axis
+#     key   : Item Group Names, will show on y-axis
 #     value : list of milestones or tasks
 #         - milestone, ['Event Name', 'Date']
 #         - tasks, ['Task Name', 'Start Date', 'End Date']
+#         - color : color specifier
+#
+# Configuration Parameters
+#     NumberOfAltPlace   : alternate y pos in a category
+#     ProperDateInterval : miminum adjacent date which
+#                          can be placed in same y pos
+#     refDate            : set this date earlier than any
+#                          task/milestone date
 ####################################################
+NumberOfAltPlace = 3
+ProperDateInterval = 30 
+refDate = "2020-1-1"
+
+color_bg = 'grey'
+markSize = 8
+categoryHeight = 20
+defaultColor = 'cornflowerblue'
+
 myLegend = [
         ['Group 1', 'r'],
         ['Group 2', 'g'],
@@ -39,20 +56,6 @@ dataset = {
             [['RC2', '2022-5-28']]
         ]
 }
-
-
-NumberOfAltPlace = 3
-ProperDateInterval = 30 
-
-color_bg = 'grey'
-markSize = 8
-
-categoryHeight = 20
-
-
-refDate = "2021-1-1"
-
-defaultColor = 'cornflowerblue'
 
 def pairwise(iterable):
     """
